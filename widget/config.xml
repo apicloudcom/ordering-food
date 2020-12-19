@@ -1,0 +1,64 @@
+ <widget id="A6150694751554"  version="0.0.1">
+
+    <name>堂食AVM版</name>
+
+    <description>
+
+        Example For APICloud.
+
+    </description>
+
+    <author email="developer@apicloud.com" href="http://www.apicloud.com">
+
+        Developer
+
+    </author>
+
+    <content src="./app.json" />
+
+    <access origin="*" />
+
+	<preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+
+	<preference name="windowBackground" value="#fff"/>
+
+	<preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+
+	<preference name="hScrollBarEnabled" value="false"/>
+
+	<preference name="autoLaunch" value="true"/>
+
+	<preference name="autoUpdate" value="true" />
+
+	<preference name="smartUpdate" value="false" />
+
+	<preference name="debug" value="true"/>
+
+	<preference name="statusBarAppearance" value="true"/>
+
+	<preference name="avm" value="true"/>
+
+	<permission name="readPhoneState" />
+
+	<permission name="camera" />
+
+	<permission name="record" />
+
+	<permission name="location" />
+
+	<permission name="fileSystem" />
+
+	<permission name="internet" />
+
+	<permission name="bootCompleted" />
+
+	<permission name="hardware" />
+
+     <feature name="wxPlus">
+         <param name="urlScheme" value="wx3b0efdcac62fc497"/>
+         <param name="apiKey" value="wx3b0efdcac62fc497"/>
+         <param name="apiSecret" value="8ff63fedec7c8c94f9fe1b858079ae81"/>
+         <param name="universalLink" value="https://com.apicloud.hallfood/app/"/>
+     </feature>
+
+</widget>

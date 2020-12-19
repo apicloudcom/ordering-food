@@ -1,0 +1,57 @@
+{
+    "name": "root",
+    "hideNavigationBar": true,
+    "bgColor": "#fff",
+    "navigationBar": {
+        "background": "#5982C2",
+        "shadow": "rgba(0,0,0,0)",
+        "color": "#fff",
+        "fontSize": 18,
+        "hideBackButton": true
+    },
+    "tabBar": {
+        "background": "#fff",
+        "shadow": "#eee",
+        "color": "#5E5E5E",
+        "selectedColor": "#FE5760",
+        "textOffset": 3,
+        "fontSize": 10,
+        "scrollEnabled": true,
+        "index": 0,
+		"preload": 2,
+        "frames": [{
+            "name": "home",
+            "url": "./pages/main_home/main_home.stml",
+            "title": "首页"
+        }, {
+            "name": "doc",
+            "url": "./pages/main_menu/main_menu.stml",
+            "title": "菜单"
+        }, {
+            "name": "about",
+            "url": "./pages/main_cart/main_cart.stml",
+            "title": "购物车"
+        }, {
+            "name": "about",
+            "url": "./pages/main_user/main_user.stml",
+            "title": "我的"
+        }],
+        "list": [{
+            "text": "首页",
+            "iconPath": "./image/icon/icon-tab-home.png",
+            "selectedIconPath": "./image/icon/icon-tab-home-selected.png"
+        }, {
+            "text": "菜单",
+            "iconPath": "./image/icon/icon-tab-menu.png",
+            "selectedIconPath": "./image/icon/icon-tab-menu-selected.png"
+        }, {
+            "text": "购物车",
+            "iconPath": "./image/icon/icon-tab-cart.png",
+            "selectedIconPath": "./image/icon/icon-tab-cart-selected.png"
+        }, {
+            "text": "我的",
+            "iconPath": "./image/icon/icon-tab-user.png",
+            "selectedIconPath": "./image/icon/icon-tab-user-selected.png"
+        }]
+    }
+}

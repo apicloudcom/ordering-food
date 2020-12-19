@@ -1,0 +1,37 @@
+<template name="radio-box">
+    <view class="radio-box-radio-box-wrap" @click="radioClick()">
+        <img class="radio-box-radio-box"
+             src={{'https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-radio-'+(this.props.checked?'checked':'normal')+'.png'}}
+             alt=""/>
+    </view>
+</template>
+
+<script>
+export default {
+    name: "radio-box",
+    // installed() {
+    //     console.log(this.props.item.goods.id)
+    // },
+    methods: {
+        radioClick() {
+            // console.log(this.props.item.goods.id)
+            this.fire('change', {
+                checked: !this.props.checked,
+                props: this.props
+            })
+        }
+    }
+}
+</script>
+
+<style scoped>
+.radio-box-radio-box-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+.radio-box-radio-box {
+    width: 18px;
+    height: 18px;
+}
+</style>

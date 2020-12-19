@@ -1,0 +1,31 @@
+<template name="empty-block">
+    <view class="empty-block-empty-block">
+        <img class="empty-block-empty-image" src={{'https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/empty/bg-empty-'+this.props.type+'.png'}} alt=""/>
+        <text class="empty-block-tips-text">{{ this.props.text }}</text>
+    </view>
+</template>
+
+<script>
+export default {
+    name: "empty-block"
+}
+</script>
+
+<style scoped>
+.empty-block-empty-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.empty-block-empty-image {
+    width: 285px;
+    height: 186px;
+}
+
+.empty-block-tips-text {
+    color: #666;
+    font-size: 18px;
+}
+</style>

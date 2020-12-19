@@ -1,0 +1,148 @@
+<template>
+
+    <view class="page flex">
+        <img class="goods-pic" mode="aspectFill" src={{goods.pic_main}} alt=""/>
+        <view class="back-btn" style={{'top:'+safeAreaTop+'px'}} @click="closeWin"></view>
+        <view class="goods-info">
+            <text class="goods-name">{{ goods.name }}</text>
+            <text class="goods-desc">{{ goods.description }}</text>
+        </view>
+        <view class="price-count flex-h flex-1">
+            <view class="goods-price-wrap flex-h flex-1 ">
+                <text class="goods-price-signal">¥</text>
+                <text class="goods-price">{{ price[0] }}</text>
+                <text class="goods-price-signal">.{{ price[1] }}</text>
+            </view>
+            <view class="num-count">
+                <goods-counter onCountChange={this.countChange.bind(this)} :count="count"></goods-counter>
+            </view>
+        </view>
+        <goods-action :goods="goods" :count="count" onAddCart="addCart"></goods-action>
+
+    </view>
+</template>
+
+<script>
+import GoodsCounter from "../../components/goods-counter.stml";
+import GoodsAction from "../../components/goods-action.stml";
+import {setTabBarBadge} from "../../script/util";
+
+export default {
+    name: "goods_detail",
+    components: {GoodsAction, GoodsCounter},
+    apiready() {
+        this.data.goods = api.pageParam.item.togoods;
+        this.data.safeAreaTop = api.safeArea ? api.safeArea.top : 0;
+        let cartList = api.getPrefs({sync: true, key: 'CART-DATA'});
+        if (cartList) {
+            cartList = JSON.parse(cartList)
+            this.data.cartData = cartList[this.data.goods.id];
+            if (this.data.cartData) {
+                this.data.count = this.data.cartData.count;
+            }
+        }
+    },
+    data() {
+        return {
+            goods: false,
+            count: 1,
+            cartData: false,
+            safeAreaTop: 0
+        }
+    },
+    methods: {
+        countChange(e) {
+            this.data.count += e.detail.change;
+        },
+        closeWin() {
+            api.closeWin();
+        },
+        addCart() {
+            let cartList = api.getPrefs({sync: true, key: 'CART-DATA'}) || '{}'
+            cartList = JSON.parse(cartList)
+            cartList[this.data.goods.id] = {
+                goods: this.data.goods, count: this.data.count
+            };
+            api.setPrefs({
+                key: 'CART-DATA',
+                value: cartList
+            });
+
+            api.toast({
+                msg: '成功加入' + this.data.count + '个到购物车', location: 'middle'
+            })
+            setTabBarBadge(2, Object.keys(cartList).length);
+        }
+    },
+    computed: {
+        price() {
+            return Number(this.data.goods.curt_price).toFixed(2).split('.')
+        }
+    }
+}
+</script>
+<style src='../../css/app.css'/>
+<style scoped>
+.page {
+    height: 100%;
+}
+
+.goods-pic {
+    width: 100%;
+    height: 375px;
+}
+
+.goods-price-wrap {
+    flex: 1;
+}
+
+.goods-info {
+    padding: 16px 15px;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.goods-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333333;
+}
+
+.goods-desc {
+    font-size: 15px;
+    color: #666666;
+    margin-top: 5px;
+}
+
+
+.price-count {
+    padding: 10px 15px;
+    flex: 1;
+}
+
+.goods-price-signal {
+    font-size: 20px;
+    color: #FE5760;
+    margin-top: 8px;
+}
+
+.goods-price {
+    font-size: 28px;
+    color: #FE5760;
+    font-weight: bold;
+}
+
+.num-count {
+    margin-top: 6px;
+}
+
+
+.back-btn {
+    position: absolute;
+    left: 15px;
+    width: 32px;
+    height: 32px;
+    background: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-goods-detail-back-btn.png);
+    background-size: 32px 32px;
+    z-index: 999;
+}
+</style>

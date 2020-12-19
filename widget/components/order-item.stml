@@ -1,0 +1,232 @@
+<template>
+    <view class="order-item-order-item">
+        <view class="order-item-order-header">
+            <view v-if="this.props.order.status===2" class="order-item-order-num">
+                <text class="order-item-order-num-key">取餐号</text>
+                <text class="order-item-order-num-value">{ this.props.order.meal_num }</text>
+            </view>
+            <text v-else class="order-item-order-status">订单已完成</text>
+        </view>
+
+        <view class="order-item-order-goods">
+            <view class="order-item-order-goods-item flex-h" v-for="goods in this.props.order.toorderdetails">
+                <img class="order-item-goods-cover"
+                     src={{goods.togoodsdetails.thumbnail}} alt=""/>
+                <text class="order-item-goods-title flex-1">{{ goods.togoodsdetails.name }}</text>
+                <text class="order-item-goods-count">× {{ goods.goods_num }}</text>
+            </view>
+        </view>
+
+
+        <view class="order-item-order-price flex-h">
+            <text class="order-item-order-price-text  flex-1">商品总价</text>
+            <text class="order-item-order-price-text">¥ { this.props.order.total }</text>
+        </view>
+
+
+        <view class="order-item-order-info">
+            <view class="order-item-order-info-item flex-h">
+                <text class="order-item-order-info-key">下单时间</text>
+                <text class="order-item-order-info-value">{ this.props.order.createAt }</text>
+            </view>
+            <view class="order-item-order-info-item flex-h">
+                <text class="order-item-order-info-key">取餐状态</text>
+                <text class="order-item-order-info-value" v-if="this.props.order.status===2">待取餐</text>
+                <text class="order-item-order-info-value" v-else-if="this.props.order.status===5">已取消</text>
+                <text class="order-item-order-info-value" v-else>已完成</text>
+            </view>
+            <view class="order-item-order-info-item flex-h">
+                <text class="order-item-order-info-key">取餐号</text>
+                <text class="order-item-order-info-value">{ this.props.order.meal_num }</text>
+            </view>
+            <view class="order-item-order-info-item flex-h">
+                <text class="order-item-order-info-key">备注</text>
+                <text class="order-item-order-info-value">{ this.props.order.remark }</text>
+            </view>
+        </view>
+
+
+        <view class="order-item-order-action" v-if="this.props.order.status===2">
+            <view class="order-item-act-btn act-btn-red" @click="action('orders/cancel')">
+                <text class="order-item-act-text act-text-red">取消订单</text>
+            </view>
+        </view>
+
+        <view class="order-item-order-action" v-else-if="this.props.order.status===4">
+            <text class="order-item-act-text-btn act-text act-text-gray">等待商家审核</text>
+            <view class="order-item-act-btn act-btn-red" @click="action('orders/withdraw')">
+                <text class="order-item-act-text act-text-red">取消申请</text>
+            </view>
+        </view>
+
+        <view class="order-item-order-action" v-else>
+            <view></view>
+            <view class="order-item-act-btn act-btn-red">
+                <text class="order-item-act-text act-text-red">删除订单</text>
+            </view>
+        </view>
+
+    </view>
+</template>
+
+<script>
+export default {
+    name: "order-item",
+    methods: {
+        action(name) {
+            this.fire('OrderAction', {name, props: this.props})
+        }
+    }
+}
+</script>
+
+<style scoped>
+.order-item-order-item {
+    border: 1px solid #eee;
+    margin: 10px 15px;
+    padding: 10px 10px 0 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-item-order-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.order-status {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin: 10px;
+    text-align: center;
+}
+
+.order-item-order-num {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-item-order-num-key {
+    margin: 5px;
+    color: #333;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+
+.order-item-order-goods {
+    border-top: 1px solid #EEE;
+    border-bottom: 1px solid #EEE;
+    padding-bottom: 10px;
+}
+
+.order-item-order-goods-item {
+    margin-top: 10px;
+    align-items: center;
+}
+
+.order-item-goods-title {
+    margin-left: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+.order-item-goods-cover {
+    width: 54px;
+    height: 54px;
+    border-radius: 5px;
+}
+
+
+.order-item-order-price {
+    padding: 15px 0;
+    border-bottom: 1px solid #EEE;
+}
+
+
+.order-item-order-price-text {
+    color: #333;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.flex-h {
+    flex-flow: row;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.order-item-order-num-value {
+    color: #FE5760;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.order-item-order-info {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #EEE;
+}
+
+.order-item-order-info-item {
+    margin-top: 10px;
+}
+
+.order-item-order-info-key {
+    font-size: 12px;
+    color: #666;
+    width: 60px;
+}
+
+.order-item-order-info-value {
+    font-size: 12px;
+    color: #666;
+}
+
+.order-item-order-action {
+    height: 54px;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.order-item-act-btn {
+    padding: 7px 20px;
+    border-radius: 4px;
+    margin-left: 10px;
+    height: 34px;
+}
+
+.order-item-act-text-btn {
+    margin-left: 10px;
+}
+
+.act-text {
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+
+.act-btn-red {
+    border: 1px solid #FE5760;
+}
+
+.act-text-red {
+    color: #FE5760;
+}
+
+.act-btn-gray {
+    border: 1px solid #999;
+}
+
+.act-text-gray {
+    color: #999;
+}
+
+</style>

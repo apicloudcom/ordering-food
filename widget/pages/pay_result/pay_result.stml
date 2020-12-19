@@ -1,0 +1,91 @@
+<template>
+    <view class="page flex flex-center">
+
+        <img class="icon"
+             src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-pay-result-success.png" alt=""/>
+        <text class="tips-text">订单支付成功</text>
+
+        <view class="btn-box flex-h flex-center">
+            <view class="btn btn-main" @click="next(1)">
+                <text class="btn-text btn-text-main">继续选购</text>
+            </view>
+            <view class="btn btn-sub" @click="next(3)">
+                <text class="btn-text btn-text-sub">查看订单</text>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import {setTabBarIndex} from "../../script/util";
+
+export default {
+    name: "pay_result",
+    methods: {
+        next(index) {
+            setTabBarIndex(index);
+            setTimeout(_ => {
+                api.closeToWin({
+                    name: 'root'
+                })
+            }, 300)
+
+        }
+    }
+}
+</script>
+
+<style src='../../css/app.css'/>
+<style scoped>
+.page {
+    height: 100%;
+}
+
+.icon {
+    width: 100px;
+    height: 100px;
+}
+
+.tips-text {
+    font-size: 18px;
+    color: #333;
+    margin: 21px;
+}
+
+.btn-box {
+    width: 100%;
+    margin: 105px 0;
+}
+
+
+.btn {
+    width: 42%;
+    border-radius: 4px;
+}
+
+.btn-main {
+    background: #FE5760;
+}
+
+.btn-sub {
+    background: #FFF;
+    margin-left: 10px;
+    border: 1px solid #FE5760;
+}
+
+.btn-text {
+    color: #FFFFFF;
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+    font-size: 15px;
+}
+
+.btn-text-main {
+    color: #FFF;
+}
+
+.btn-text-sub {
+    color: #FE5760;
+}
+</style>

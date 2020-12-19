@@ -1,0 +1,155 @@
+<template>
+    <view class="page" style={{'background:'+background}}>
+        <view class="mask" @click="closeThis">
+
+        </view>
+        <view class="move" style={{'transform:translateY('+goodsCardBottom+'px)'}}>
+            <view class="goods-card">
+                <img class="goods-cover" mode="aspectFill" src={{goods.pic_main}} alt=""/>
+                <view class="goods-info">
+                    <text class="goods-title">
+                        {{ goods.name }}
+                    </text>
+                    <view class="goods-footer">
+                        <text class="goods-price-signal">¥</text>
+                        <text class="goods-price">{{ goods.curt_price }}</text>
+                        <goods-counter onCountChange={this.countChange.bind(this)} :count="count"></goods-counter>
+                    </view>
+                </view>
+            </view>
+
+            <goods-action :goods="goods" :count="count" onAddCart="addCart"></goods-action>
+        </view>
+
+    </view>
+</template>
+
+<script>
+import GoodsCounter from "../../components/goods-counter.stml";
+import GoodsAction from "../../components/goods-action.stml";
+import {isMP, setTabBarBadge} from "../../script/util";
+
+export default {
+    name: "goods-add",
+    components: {GoodsAction, GoodsCounter},
+    installed() {
+        this.data.goods = this.props.goods ? this.props.goods : api.pageParam.goods;
+        console.log(this.data.goods)
+
+        setTimeout(() => {
+            this.data.background = 'rgba(0,0,0,.5)'
+            this.data.goodsCardBottom = 0;
+        }, 11);
+
+        let cartList = api.getPrefs({sync: true, key: 'CART-DATA'});
+        if (cartList) {
+            cartList = JSON.parse(cartList)
+            this.data.cartData = cartList[this.data.goods.id];
+            if (this.data.cartData) {
+                this.data.count = this.data.cartData.count;
+            }
+        }
+    },
+    data() {
+        return {
+            background: 'rgba(0,0,0,0)',
+            goods: false,
+            goodsCardBottom: 375,
+            count: 1
+        }
+    },
+    methods: {
+        closeThis() {
+            this.data.background = 'rgba(0,0,0,0)'
+            this.data.goodsCardBottom = 375;
+            setTimeout(() => {
+                if (isMP()) {
+                    api.sendEvent({
+                        name: 'CLOSE-GOODS-ADD'
+                    })
+                } else {
+                    api.closeFrame();
+                }
+            }, 300);
+        },
+        countChange(e) {
+            this.data.count += e.detail.change;
+        },
+        addCart() {
+            let cartList = api.getPrefs({sync: true, key: 'CART-DATA'}) || '{}'
+            cartList = JSON.parse(cartList)
+            cartList[this.data.goods.id] = {
+                goods: this.data.goods, count: this.data.count
+            };
+            api.setPrefs({
+                key: 'CART-DATA',
+                value: cartList
+            });
+
+            setTabBarBadge(2, Object.keys(cartList).length);
+            api.toast({
+                msg: '成功加入' + this.data.count + '个到购物车', location: 'middle'
+            })
+            this.closeThis();
+        }
+    }
+}
+</script>
+<style scoped>
+.page {
+    height: 100%;
+    display: flex;
+    transition: all 0.5s;
+}
+
+.mask {
+    flex: 1;
+}
+
+.move {
+    position: relative;
+    transition: all 0.3s;
+    transform: translateY(375px);
+}
+
+.goods-card {
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 30px 15px;
+    flex-flow: row;
+}
+
+.goods-cover {
+    width: 70px;
+    height: 70px;
+}
+
+.goods-info {
+    margin-left: 10px;
+    flex: 1;
+}
+
+.goods-title {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    flex: 1;
+}
+
+.goods-footer {
+    flex-direction: row;
+}
+
+.goods-price-signal {
+    font-size: 12px;
+    color: #FE5760;
+    margin-top: 3px;
+}
+
+.goods-price {
+    font-size: 15px;
+    color: #FE5760;
+    flex: 1;
+}
+
+</style>

@@ -1,0 +1,347 @@
+<template name="main-cart">
+    <view class="main-cart-main-cart">
+        <safe-area>
+            <view class="main-cart-header">
+                <text class="main-cart-title">购物车</text>
+            </view>
+        </safe-area>
+
+        <view class="main-cart-cart-list" v-if="cartList.length">
+            <scroll-view class="main-cart-main-cart-scroll-view" enable-back-to-top>
+                <view class="main-cart-list-header">
+                    <text class="main-cart-list-title">选购的商品</text>
+                    <view @click="toggleEdit">
+                        <text class="main-cart-finnish-text" v-if="isEdit">完成</text>
+                        <text class="main-cart-action-text" v-else>编辑</text>
+                    </view>
+
+                </view>
+                <view class="main-cart-goods-item" v-for="item in cartList">
+                    <radio-box class="main-cart-radio-box" :checked="item.checked"
+                               onChange={this.radioToggle.bind(this)}
+                               :item="item"></radio-box>
+                    <img class="main-cart-goods-pic" mode="aspectFill" src={{item.goods.thumbnail}} alt=""/>
+                    <view class="main-cart-goods-info">
+                        <text class="main-cart-goods-name">{{ item.goods.name }}</text>
+                        <view class="main-cart-flex-h">
+                            <text class="main-cart-goods-price-signal">¥</text>
+                            <text class="main-cart-goods-price-num">{{ item.goods.curt_price }}</text>
+                            <goods-counter onCountChange={this.countChange.bind(this)}
+                                           :count="item.count" :item="item"></goods-counter>
+                        </view>
+                    </view>
+                </view>
+            </scroll-view>
+            <safe-area class="main-cart-list-footer">
+                <view style="width: 15px"></view>
+                <radio-box class="main-cart-check-all" :checked="allChecked"
+                           onChange={this.checkAll.bind(this)}></radio-box>
+                <text class="main-cart-footer-text" style="flex: 1;padding-left: 5px">全选</text>
+                <view class="text-group">
+                    <text class="main-cart-footer-text">合计</text>
+                    <text class="main-cart-footer-price">¥{{ totalPrice }}</text>
+                    <view class="main-cart-footer-btn" @click="nextStep">
+                        <text class="main-cart-footer-btn-text">{{ isEdit ? '移除' : '去结算' }}</text>
+                    </view>
+                </view>
+            </safe-area>
+        </view>
+
+
+        <view class="main-cart-empty" v-else>
+            <empty-block type="cart" text="购物车空空如也"></empty-block>
+            <view class="main-cart-btn" @click="goToBuy">
+                <text class="main-cart-btn-text">去购物</text>
+            </view>
+        </view>
+
+    </view>
+</template>
+
+<script>
+import emptyBlock from '../../components/empty-block.stml'
+import GoodsCounter from "../../components/goods-counter.stml";
+import RadioBox from "../../components/radio-box.stml";
+import {setTabBarBadge, setTabBarIndex} from "../../script/util";
+
+export default {
+    name: 'main-cart',
+    components: {RadioBox, GoodsCounter, emptyBlock},
+    apiready() {
+        this.getCartData();
+
+        api.addEventListener({
+            name: 'CART-DATA-CHANGED'
+        }, this.getCartData.bind(this));
+
+    },
+    onshow() {
+        console.log(['cart', 'onshow'])
+        this.getCartData();
+    },
+    data() {
+        return {
+            cartList: [],
+            cartData: {},
+            isEdit: false
+        }
+    },
+    computed: {
+        allChecked() {
+            return !this.cartList.some((item) => {
+                return !item.checked;
+            })
+        },
+        totalPrice() {
+            let list = this.data.cartList.filter(item => {
+                return item.checked;
+            })
+
+            return (list.length ? list.reduce((total, item) => {
+                return total + item.goods.curt_price * item.count;
+            }, 0) : 0).toFixed(2);
+        }
+    },
+    methods: {
+        goToBuy() {
+            setTabBarIndex(1);
+        },
+        getCartData() {
+            let cartData = api.getPrefs({sync: true, key: 'CART-DATA'});
+            if (cartData) {
+                cartData = JSON.parse(cartData);
+                this.data.cartData = cartData;
+                this.computedCartList();
+                setTabBarBadge(2, Object.keys(cartData).length);
+            }
+        },
+        countChange({detail}) {
+            detail.props.item.count += detail.change;
+            this.data.cartData[detail.props.item.goods.id] = detail.props.item;
+            api.setPrefs({
+                key: 'CART-DATA',
+                value: this.data.cartData
+            });
+        },
+        computedCartList() {
+            let cartData = this.data.cartData;
+            let arr = [];
+            for (let i in cartData) {
+                arr.push({checked: true, ...cartData[i]});
+            }
+            this.data.cartList = arr;
+        },
+        radioToggle({detail}) {
+            detail.props.item.checked = detail.checked;
+        },
+        checkAll() {
+            const checked = !this.allChecked;
+            for (let i = 0; i < this.data.cartList.length; i++) {
+                this.data.cartList[i].checked = checked;
+            }
+        },
+        toggleEdit() {
+            this.data.isEdit = !this.data.isEdit;
+        },
+        removeGoods() {
+            for (let i = 0; i < this.data.cartList.length; i++) {
+                if (this.data.cartList[i].checked) {
+                    delete this.data.cartData[this.data.cartList[i].goods.id];
+                }
+            }
+            api.setPrefs({
+                key: 'CART-DATA',
+                value: this.data.cartData
+            });
+
+            this.computedCartList();
+            setTabBarBadge(2, Object.keys(this.data.cartData).length);
+        },
+        gotoCrash() {
+            const pageParam = {
+                list: this.data.cartList.filter(item => {
+                    return item.checked;
+                })
+            }
+            api.openWin({
+                name: 'pending_order',
+                url: '../pending_order/pending_order.stml',
+                pageParam
+            });
+        },
+        nextStep() {
+            if (this.data.isEdit) {
+                this.removeGoods();
+            } else {
+                this.gotoCrash();
+            }
+        }
+    }
+}
+</script>
+<style scoped>
+.main-cart-main-cart {
+    height: 100%;
+}
+
+
+.main-cart-title {
+    font-weight: 500;
+    color: #020202;
+    font-size: 18px;
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+}
+
+.main-cart-btn {
+    background: #FE5760;
+    width: 50%;
+    margin-top: 30px;
+    border-radius: 4px;
+    align-self: center;
+}
+
+.main-cart-btn-text {
+    color: #FFFFFF;
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+    font-size: 15px;
+}
+
+.main-cart-cart-list {
+    display: flex;
+    flex: 1;
+}
+
+.main-cart-main-cart-scroll-view {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    box-sizing: border-box;
+}
+
+.main-cart-flex-h {
+    flex-flow: row;
+}
+
+.main-cart-list-header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+.main-cart-list-title {
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+    flex: 1;
+}
+
+.main-cart-action-text {
+    padding-left: 20px;
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-edit.png);
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: left center;
+    font-size: 14px;
+    color: #999;
+}
+
+.main-cart-finnish-text {
+    font-size: 14px;
+    color: #999;
+    background-image: none;
+}
+
+.main-cart-goods-item {
+    margin: 10px 0;
+    flex-flow: row;
+}
+
+.main-cart-goods-info {
+    margin: 0 5px 0 10px;
+    flex: 1;
+}
+
+.main-cart-goods-pic {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.main-cart-goods-name {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: #333333;
+    flex: 1;
+}
+
+.main-cart-goods-price-signal {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FE5760;
+    line-height: 22px;
+}
+
+.main-cart-goods-price-num {
+    font-size: 15px;
+    font-weight: 500;
+    color: #FE5760;
+    flex: 1;
+}
+
+
+.main-cart-empty {
+    display: flex;
+    justify-content: center;
+    /*align-items: center;*/ /*这个会造成布局异常 不知为何*/
+    flex: 1;
+}
+
+.main-cart-list-footer {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #f9f9f9;
+}
+
+.main-cart-check-all {
+    border: 1px solid red;
+}
+
+.main-cart-footer-text {
+    font-size: 12px;
+    color: #333;
+}
+
+.main-cart-footer-btn {
+    background: #FE5760;
+    width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+}
+
+.main-cart-footer-price {
+    color: #FE5760;
+    font-size: 20px;
+    margin: 0 10px;
+}
+
+.main-cart-footer-btn-text {
+    color: #fff;
+    font-size: 15px;
+}
+
+.text-group {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+</style>

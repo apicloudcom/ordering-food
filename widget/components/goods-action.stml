@@ -1,0 +1,60 @@
+<template name="goods-action">
+    <safe-area class="action-bar">
+
+        <view class="action-btn btn-add-cart" @click="addCart">
+            <text class="btn-text">加入购物车</text>
+        </view>
+        <view class="action-btn btn-crash"
+              @click="crash">
+            <text class="btn-text">结算</text>
+        </view>
+
+    </safe-area>
+</template>
+
+<script>
+export default {
+    name: "goods-action",
+    methods: {
+        crash() {
+            const pageParam = {list: [this.props]};
+            api.openWin({
+                name: 'pending_order',
+                url: '../../pages/pending_order/pending_order.stml',
+                pageParam
+            });
+        },
+        addCart() {
+            this.fire('addCart')
+        }
+    }
+}
+</script>
+
+<style scoped>
+.action-bar {
+    flex-direction: row;
+    background: #fff;
+}
+
+.btn-add-cart {
+    background: #FFC54A;
+    height: 48px;
+}
+
+.btn-crash {
+    background: #FE5760;
+    height: 48px;
+}
+
+.btn-text {
+    color: #fff;
+    font-size: 15px;
+}
+
+.action-btn {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+</style>

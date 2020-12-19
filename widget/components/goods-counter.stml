@@ -1,0 +1,59 @@
+<template name="goods-counter">
+    <view class="flex-h">
+        <view class="num-btn num-decrease" @click="countChange(-1)"></view>
+        <text class="num-text">{ this.props.count }</text>
+        <view class="num-btn num-increase" @click="countChange(1)"></view>
+    </view>
+</template>
+
+<script>
+export default {
+    name: "goods-counter",
+    methods: {
+        countChange(change) {
+            if (this.props.count + change === 0) {
+                return api.toast({
+                    msg: '不能再减少了\n可在购物车编辑模式下移除',
+                    location: 'middle'
+                })
+            }
+            this.fire('CountChange', {
+                change,
+                props: this.props
+            })
+        }
+    }
+}
+</script>
+
+<style scoped>
+.flex-h {
+    -webkit-box-orient: horizontal;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+}
+
+.num-btn {
+    width: 22px;
+    height: 22px;
+    background-size: 22px 22px;
+}
+
+.num-decrease {
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-num-decrease.png);
+}
+
+.num-increase {
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-num-increase.png);
+}
+
+.num-text {
+    padding: 0 8px;
+    font-size: 14px;
+    color: #333;
+    margin-top: 2px;
+    min-width: 28px;
+    text-align: center;
+}
+
+</style>

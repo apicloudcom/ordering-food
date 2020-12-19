@@ -1,0 +1,235 @@
+<template>
+    <view class="main-home">
+        <img class="shop-photo" style={{'height:'+photoRealHeight+'px'}}
+             src={{shopInfo.img}}
+             alt=""/>
+
+        <!--        <text class="egg flex flex-center">已经到底了</text>-->
+
+
+
+        <scroll-view scroll-y class="flex-1 scroll-view" enable-back-to-top @scroll="onScroll">
+            <view class="shop"
+                  style={{'margin-top:'+photoRealHeight+'px'}}>
+                <view class="shop-header flex-h">
+                    <text class="shop-name flex-1 ellipsis-1">{{ shopInfo.name }}</text>
+                    <img class="shop-phone" @click="callPhone"
+                         src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-home-phone.png"
+                         alt=""/>
+                </view>
+                <view class="content-wrap">
+                    <text class="shop-text shop-address">
+                        {{ shopInfo.city }} {{ shopInfo.country }} {{ shopInfo.address }}
+                    </text>
+                </view>
+                <view class="shop-operation content-wrap">
+                    <text class="shop-text">营业中 09:00 - 13:00，16:00 - 22:00</text>
+                </view>
+            </view>
+
+
+            <view class="list" v-for="item in classifyList">
+                <goods-list-item class="goods-item" :list="item.togc" :title="item.name"></goods-list-item>
+            </view>
+        </scroll-view>
+        <view class="header-bar"
+              style={{'opacity:'+this.data.opacity+';padding-top:'+safeAreaTop+'px'}}>
+            <text class="nav-title shop-name">{{ shopInfo.name }}</text>
+        </view>
+    </view>
+</template>
+<script>
+
+import goodsListItem from '../../components/goods-list-item.stml';
+import {GET} from "../../script/req";
+import {isMP, setTabBarBadge} from "../../script/util";
+
+export default {
+    name: 'main-home',
+    components: {goodsListItem},
+    apiready() {
+        this.data.safeAreaTop = api.safeArea ? api.safeArea.top : 0;
+        this.initEventListener();
+        this.getData();
+        this.getClassifiesData();
+        this.getCartNum();
+
+
+        // 初始状态栏是白色的
+        api.setStatusBarStyle && api.setStatusBarStyle({
+            style: 'light',
+            color: '-'
+        });
+    },
+    onshow() {
+        let cartData = api.getPrefs({sync: true, key: 'CART-DATA'});
+        if (cartData) {
+            cartData = JSON.parse(cartData);
+            setTabBarBadge(2, Object.keys(cartData).length);
+        }
+    },
+    data() {
+        return {
+            photoHeight: 210,
+            opacity: 0,
+            shopInfo: {
+                shopName: '小龙坎老火锅（西直门店）',
+                address: '北京市 海淀区 文教产业园44号院F座4层 柚子科技',
+                operation: {
+                    status: 1,
+                    times: ['09:00 - 13:00', '16:00 - 22:00']
+                },
+            },
+            safeAreaTop: 0,
+            classifyList: []
+        }
+    },
+    computed: {
+        photoRealHeight() {
+            return this.data.photoHeight + this.data.safeAreaTop
+        },
+        statusBarStyle() {
+            return this.data.opacity < 0.5 ? 'light' : 'dark';
+        }
+    },
+    methods: {
+        onScroll(e) {
+            const y = isMP() ? e.detail.scrollTop : e.detail.y;
+
+            let threshold = this.photoRealHeight - y;
+            if (threshold < 0) {
+                threshold = 0;
+            }
+            this.data.opacity = 1 - threshold / this.photoRealHeight;
+            api.setStatusBarStyle && api.setStatusBarStyle({
+                style: this.statusBarStyle
+            });
+        },
+        initEventListener() {
+            // 监听来自其他页面逻辑主动触发的切换tabBar请求，后续需要手动调用setTabIndex来切换
+            api.addEventListener({
+                name: 'SET-TAB-INDEX',
+            }, ret => {
+                console.log('收到了')
+                this.setTabIndex(ret.value);
+            })
+
+            // 监听来自tabBar本身点击触发的切换tabBar请求，后续需要手动调用setTabIndex来切换
+            api.addEventListener({
+                name: 'tabitembtn'
+            }, this.setTabIndex);
+        },
+        setTabIndex(ret) {
+            const {index} = ret;
+            api.setTabBarAttr({index});// 切换tabBar
+            api.setStatusBarStyle && api.setStatusBarStyle({// 设置状态栏
+                style: index ? 'dark' : this.statusBarStyle
+            });
+        },
+        getCartNum() {
+            let cartList = api.getPrefs({sync: true, key: 'CART-DATA'});
+            if (cartList) {
+                cartList = JSON.parse(cartList);
+                setTabBarBadge(2, Object.keys(cartList).length);
+            }
+        },
+        getData(format) {
+            GET('shops/getInfo')
+                .then(data => {
+                    this.data.shopInfo = data;
+                })
+        },
+        callPhone() {
+            if (isMP()) {
+                wx.makePhoneCall({
+                    phoneNumber: this.data.shopInfo.phone
+                })
+            } else {
+                api.call({
+                    type: 'tel_prompt',
+                    number: this.data.shopInfo.phone
+                });
+            }
+        },
+        getClassifiesData() {
+            GET('classifies/getClassifyGoodsList').then(data => {
+                this.data.classifyList = data;
+            })
+        }
+    }
+}
+</script>
+<style src='../../css/app.css'/>
+<style scoped>
+.main-home {
+    height: 100%;
+    background: #F6F2F2;
+    position: relative;
+    display: flex;
+}
+
+
+.content-wrap {
+    padding: 10px 15px;
+}
+
+.header-bar {
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+    background: #f9f9f9;
+}
+
+.nav-title {
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+}
+
+.scroll-view {
+    margin-top: -11px;
+}
+
+.shop {
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+}
+
+.shop-photo {
+    position: absolute;
+    width: 100%;
+}
+
+.shop-header {
+    padding: 10px 15px 0;
+}
+
+.shop-name {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.shop-phone {
+    width: 22px;
+    height: 22px;
+}
+
+.shop-operation {
+    border-top: 1px solid #eee;
+}
+
+.shop-text {
+    color: #666;
+    font-size: 15px;
+}
+
+.shop-address {
+    width: 80%;
+}
+
+.list {
+    padding-top: 10px;
+    background: #F6F2F2;
+}
+
+</style>

@@ -1,0 +1,286 @@
+<template name="main-user">
+    <view class="main-user flex">
+        <safe-area>
+            <view class="header">
+                <text class="title">我的</text>
+            </view>
+        </safe-area>
+        <view class="user-info flex flex-h flex-center-v" v-if="userInfo" @click="logout">
+            <img class="user-avatar"
+                 src={{userInfo.avatarUrl}} alt=""/>
+            <text class="user-name">{{ userInfo.nickName }}</text>
+        </view>
+        <view class="user-info flex flex-h flex-center-v" v-else @click="wxLogin">
+            <img class="user-avatar"
+                 src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-user-avatar.png" alt=""/>
+            <text class="user-name">使用微信登录</text>
+        </view>
+
+
+        <view class="user-info-shadow"></view>
+
+        <scroll-view scroll-y class="flex-1 main-user-scroll-view"
+                     enable-back-to-top refresher-enabled
+                     refresher-triggered={{loading}}
+                     @refresherrefresh="onRefresh">
+            <view v-if="orderList.length">
+                <order-item :order="order" v-for="order in orderList"
+                            onOrderAction={this.orderAction.bind(this)}></order-item>
+            </view>
+
+            <view class="empty-block" v-else>
+                <empty-block text="暂无订单哦～" type="order"></empty-block>
+            </view>
+        </scroll-view>
+    </view>
+</template>
+<style src='../../css/app.css'/>
+<style scoped>
+.main-user {
+    height: 100%;
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/bg/bg-user-header.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+
+.title {
+    font-weight: 500;
+    color: #020202;
+    font-size: 18px;
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+}
+
+.user-info {
+    padding: 16px;
+}
+
+.user-info-shadow {
+    height: 10px;
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/bg/bg-user-info-shadow.png);
+    background-size: 100% 10px;
+    background-repeat: no-repeat;
+}
+
+.user-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+}
+
+.user-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333333;
+    margin-left: 10px;
+}
+
+.empty-block {
+    margin-top: 50px;
+}
+</style>
+<script>
+import emptyBlock from "../../components/empty-block.stml";
+import OrderItem from "../../components/order-item.stml";
+import {getUser, isMP} from "../../script/util";
+import {config, GET, POST} from '../../script/req'
+
+
+export default {
+    name: 'main-user',
+    components: {OrderItem, emptyBlock},
+    data() {
+        return {
+            orderList: [],
+            loading: false,
+            userInfo: getUser()
+        }
+    },
+    apiready() {
+        if (this.data.userInfo) {
+            this.getOrderList();
+        }
+
+        api.addEventListener({
+            name: 'PAY-SUCCESS'
+        }, _ => {
+            this.getOrderList();
+
+            if (isMP()) {
+                api.sendEvent({
+                    name: 'CLOSE-GOODS-ADD'
+                })
+            } else {
+                setTimeout(_ => {
+                    api.closeFrame({
+                        name: 'goods_add'
+                    });
+                }, 345)
+            }
+
+        })
+
+    },
+    methods: {
+        onRefresh() {
+            this.data.loading = true;
+            if (this.data.userInfo) {
+                this.getOrderList();
+            } else {
+                setTimeout(_ => {
+                    this.data.loading = false;
+                    api.toast({
+                        msg: '请登录后查看历史订单'
+                    })
+                }, 1000)
+            }
+        },
+        wxLogin() {
+            if (isMP()) {
+                this.mpLogin();
+            } else {
+                const wxPlus = api.require('wxPlus');
+                wxPlus.isInstalled(ret => {
+                    if (ret.installed) {
+                        wxPlus.auth((ret, err) => {
+                            if (ret.status) {
+                                POST('c_users/app_wx_login', ret, {
+                                    returnAll: false
+                                }).then(data => {
+                                    api.setPrefs({
+                                        key: 'COOKIE',
+                                        value: data.header.cookie
+                                    })
+
+                                    this.mockLogin();
+                                })
+                            } else {
+                                api.alert({
+                                    title: '微信登录失败',
+                                    msg: JSON.stringify(err)
+                                })
+                            }
+                        });
+                    } else {
+                        api.toast({
+                            msg: '当前设备未安装微信客户端'
+                        })
+                    }
+                });
+            }
+        },
+        // 小程序端登录逻辑
+        mpLogin() {
+            console.log('mpLogin')
+
+            const baseUrl = `${config.schema}://${config.host}/${config.path}/`;
+            this.getCode().then(code => {
+
+                wx.request({
+                    url: baseUrl + 'c_users/wxLogin', //仅为示例，并非真实的接口地址
+                    method: 'POST',
+                    data: {
+                        code
+                    },
+                    header: {
+                        'content-type': 'application/json' // 默认值
+                    },
+                    success: res => {
+                        api.setPrefs({
+                            key: 'COOKIE',
+                            value: res.header['Set-Cookie']
+                        })
+                        this.mockLogin();
+                    }, fail(error) {
+                        api.alert({
+                            title: '微信登录失败',
+                            msg: JSON.stringify(error)
+                        })
+                    }
+                })
+
+
+            }).catch(error => {
+                wx.showModal({
+                    title: '获取登录信息失败',
+                    content: error,
+                    showCancel: false
+                });
+            })
+        },
+        // 获取微信的code (调用wx自有api)
+        getCode() {
+            return new Promise((resolve, reject) => {
+                wx.login({
+                    success(res) {
+                        if (res.code) {
+                            //  获取code成功
+                            resolve(res.code);
+                        } else {
+                            console.log('登录失败！' + res.errMsg)
+                            reject(res)
+                        }
+                    },
+                    fail(err) {
+                        reject(err)
+                    }
+                })
+            })
+        },
+        mockLogin() {
+            api.alert({
+                title: '模拟登录',
+                msg: 'APP模拟登录为演示账号'
+            }, _ => {
+                this.loginSuccess({
+                    nickName: '演示账号',
+                    avatarUrl: 'https://file.service.qq.com/user-files/uploads/202004/e0a02a9af8fe637e71f37aea190811e0.png'
+                })
+            })
+        },
+        loginSuccess(userInfo) {
+            api.setPrefs({
+                key: 'USER',
+                value: userInfo
+            });
+
+            this.data.userInfo = userInfo;
+            this.getOrderList();
+        },
+        logout() {
+            api.confirm({
+                title: '退出账号',
+                msg: '确定要退出当前账号吗',
+                buttons: ['取消', '确认退出']
+            }, _ => {
+                api.removePrefs({
+                    key: 'USER'
+                });
+                api.removePrefs({
+                    key: 'COOKIE'
+                });
+
+                this.data.userInfo = false;
+                this.data.orderList = [];
+            })
+        },
+        getOrderList() {
+            GET('orders/get_all_user_list').then(data => {
+                this.data.orderList = data;
+                setTimeout(() => {
+                    this.data.loading = false;
+                }, 1000)
+            })
+        },
+        orderAction(e) {
+            const {name, props: {order: {id: order_id}}} = e.detail;
+            POST(name, {order_id}).then(res => {
+                api.toast(res);
+                this.getOrderList();
+            })
+        }
+    }
+}
+</script>

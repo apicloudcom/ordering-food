@@ -1,0 +1,259 @@
+<template>
+    <view class="main-menu">
+        <safe-area>
+            <view class="header">
+                <text class="title">菜单</text>
+            </view>
+        </safe-area>
+
+
+        <view class="menu-wrap flex-h flex-1">
+            <scroll-view scroll-y class="left-category">
+                <view :class="this.data.categoryIndex ===index?'category-item-current':'category-item-normal'"
+                      v-for="(item,index) of categoryNames" @click="switchCategory(index)">
+                    <text :class="'category-text '
+                        + (this.data.categoryIndex === index?'category-text-current':'category-text-normal')">
+                        {{ item }}
+                    </text>
+                </view>
+            </scroll-view>
+            <scroll-view scroll-y scroll-with-animation class="right-list flex-1" id="right-list" @scroll="onScroll"
+                         scroll-top={scrollTo}>
+                <view v-for="(item,index) in menuList" id={this.categoryNames[index]}>
+                    <view>
+                        <text class="category-title">{{ categoryNames[index] }}</text>
+                    </view>
+                    <view v-if="item.length">
+                        <view class="goods-item flex-h" v-for="goods in item">
+                            <img class="goods-pic" mode="aspectFill" src={{goods.thumbnail}} alt=""/>
+                            <view class="goods-info flex-1">
+                                <text class="goods-name flex-1">{{ goods.name }}</text>
+                                <view class="flex-h">
+                                    <text class="goods-price-signal">¥</text>
+                                    <text class="flex-1 goods-price-num">{{ goods.curt_price.toFixed(2) }}</text>
+                                    <img class="num-btn num-increase" @click="openAdd(goods)" src="../../image/icon/icon-cart-num-increase.png" />
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                    <view v-else class="goods-empty flex flex-center">
+                        <text class="goods-empty-text">当前分类下暂无商品</text>
+                        <text class="goods-empty-text">There is no goods in this classification</text>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+
+
+        <view v-if="currentGoods" style="position: absolute;width: 100%;height: 100%;">
+            <goods-add :goods="currentGoods"></goods-add>
+        </view>
+    </view>
+</template>
+<script>
+
+import GoodsCounter from "../../components/goods-counter.stml";
+import GoodsAdd from "../goods_add/goods_add.stml";
+import {GET} from "../../script/req";
+import {isMP} from "../../script/util";
+
+export default {
+    name: 'main-menu',
+    components: {GoodsCounter, GoodsAdd},
+    apiready() {
+        this.getMenuData();
+        api.addEventListener({
+            name: 'CLOSE-GOODS-ADD'
+        }, _ => {
+            wx.showTabBar();
+            this.data.currentGoods = null;
+        })
+    },
+    data() {
+        return {
+            CD: new Date().getTime(),
+            categoryIndex: 0,
+            menuList: {},
+            scrollTo: 0,
+            currentGoods: null
+        }
+    },
+    computed: {
+        // 使用 v-for 遍历对象的时候 暂时使用计算替代
+        categoryNames() {
+            return Object.keys(this.data.menuList)
+        },
+        offsetList() {
+            const goodsHeight = 90;
+            const emptyHeight = 88;
+            const goodsNameHeight = 18;
+            let offsetList = [0];
+            let offset = 0;
+            for (const category in this.data.menuList) {
+                let goodsLength = this.data.menuList[category].length;
+                offset += (goodsLength ? goodsLength * goodsHeight : emptyHeight) + goodsNameHeight
+                offsetList.push(offset);
+            }
+            return offsetList;
+        }
+    },
+    methods: {
+        switchCategory(index) {
+            this.data.categoryIndex = index;
+            this.data.CD = new Date().getTime() + 500; // 手动切换分类后需要锁定500毫秒 避免右侧scroll-view滚动时带来次生问题
+            this.data.scrollTo = this.offsetList[index];
+        },
+        onScroll(e) {
+            const y = isMP() ? e.detail.scrollTop : e.detail.y;
+
+            for (let i = 0; i < this.offsetList.length; i++) {
+                if (i) {// 第一个不判断
+                    if (y >= this.offsetList[i - 1] && y < this.offsetList[i]) {//判断是否在区间内
+                        if (new Date().getTime() > this.data.CD) {//冷却CD已经不存在
+                            this.data.categoryIndex = i - 1; //设置左边的高亮
+                        }
+                    }
+                }
+            }
+        },
+        openAdd(goods) {
+            if (isMP()) {
+                this.data.currentGoods = goods;
+                wx.hideTabBar();
+            } else {
+                api.openFrame({
+                    name: 'goods_add',
+                    url: '../goods_add/goods_add.stml',
+                    pageParam: {goods}
+                })
+            }
+        },
+        getMenuData() {
+            GET('goods_categories/goods_list').then(data => {
+                let menuList = {};
+                data.forEach(item => {
+                    menuList[item.name] = item.goods_list;
+                })
+                this.data.menuList = menuList;
+            })
+        }
+    }
+}
+</script>
+
+<style src='../../css/app.css'/>
+<style scoped>
+.main-menu {
+    height: 100%;
+}
+
+
+.title {
+    font-weight: 500;
+    color: #020202;
+    font-size: 18px;
+    text-align: center;
+    line-height: 44px;
+    height: 44px;
+}
+
+
+.left-category {
+    width: 110px;
+    background: #F8F8F8;
+}
+
+
+.category-item-current {
+    background: #fff;
+    height: 50px;
+    justify-content: center;
+}
+
+.category-item-normal {
+    background: #F8F8F8;
+    height: 50px;
+    justify-content: center;
+}
+
+.category-text {
+    line-height: 50px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.category-text-current {
+    font-weight: bold;
+    color: #333;
+}
+
+.category-text-normal {
+    font-weight: normal;
+    color: #666;
+}
+
+
+.right-list {
+    padding: 10px;
+}
+
+.category-title {
+    height: 18px;
+    font-weight: 500;
+    color: #333333;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.goods-item {
+    margin: 10px 0;
+}
+
+.goods-info {
+    margin: 0 5px 0 10px;
+}
+
+.goods-pic {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
+}
+
+.goods-name {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: #333333;
+}
+
+.goods-price-signal {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FE5760;
+    line-height: 22px;
+}
+
+.goods-price-num {
+    font-size: 15px;
+    font-weight: 500;
+    color: #FE5760;
+}
+
+.goods-empty {
+    height: 68px;
+    background: #f9f9f9;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.goods-empty-text {
+    color: #aaa;
+    font-size: 11px;
+}
+
+.num-btn {
+    width: 22px;
+    height: 22px;
+}
+
+</style>

@@ -1,0 +1,264 @@
+<template>
+
+    <safe-area class="page">
+
+        <view class="header">
+            <!--            <view class="header-icon header-icon-back"></view>-->
+            <img src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-header-back.png" alt=""
+                 class="header-icon" @click="close" />
+            <text class="header-text">待付款订单</text>
+            <view class="header-icon"></view>
+        </view>
+
+        <scroll-view class="list">
+            <text class="list-title">商品列表</text>
+            <view class="list-item" v-for="item in this.data.list">
+                <img class="goods-cover" mode="aspectFill" src={{item.goods.thumbnail}} alt=""/>
+                <view class="goods-info">
+                    <view class="goods-main">
+                        <text class="goods-title">{{ item.goods.name }}</text>
+                        <text class="goods-price-signal">¥</text>
+                        <text class="goods-price">{{ item.goods.curt_price.toFixed(2) }}</text>
+                    </view>
+                    <text class="goods-count">× {{ item.count }}</text>
+                </view>
+
+            </view>
+            <view class="order-note">
+                <text class="order-note-key">备注</text>
+                <input class="order-note-input" placeholder="如需备注请输入"
+                       onBlur="onBlur"
+                       maxlength="30" id="remark"/>
+            </view>
+        </scroll-view>
+
+
+        <view class="order-footer">
+            <text class="total-text">合计：</text>
+            <text class="total-price">¥ {{ totalPrice }}</text>
+            <view class="order-pay-btn" @click="addOrder">
+                <text class="order-pay-btn-text">
+                    立即支付
+                </text>
+            </view>
+        </view>
+
+    </safe-area>
+
+</template>
+
+<script>
+import {POST} from "../../script/req";
+import {setTabBarBadge} from "../../script/util";
+
+export default {
+    name: "pending_order",
+    apiready() {
+        this.data.list = api.pageParam.list;
+    },
+    data() {
+        return {
+            list: [],
+            remark: ''
+        }
+    },
+    computed: {
+        totalPrice() {
+            let list = this.data.list;
+            return (list.length ? list.reduce((total, item) => {
+                return total + item.goods.curt_price * item.count;
+            }, 0) : 0).toFixed(2);
+        },
+        formData() {
+            let remark = this.data.remark;
+            let list = this.data.list.map(item => {
+                return {goods_id: item.goods.id, num: item.count}
+            });
+            return {remark, list};
+        }
+    },
+    methods: {
+        close() {
+            api.closeWin();
+        },
+        onBlur(e) {
+            this.data.remark = e.target.value;
+        },
+        addOrder() {
+            POST('orders/app_addorder', this.formData).then(data => {
+
+                // 打开结果页
+                api.openWin({
+                    name: 'pay_result',
+                    url: '../pay_result/pay_result.stml'
+                });
+
+                // 通知支付成功 刷新订单页面
+                api.sendEvent({
+                    name: 'PAY-SUCCESS'
+                })
+
+
+                // 清空购物车
+                api.setPrefs({
+                    key: 'CART-DATA',
+                    value: {}
+                });
+
+                setTabBarBadge(2, 0);
+
+            })
+        }
+    }
+}
+</script>
+
+<style scoped>
+.page {
+    height: 100%;
+    display: flex;
+}
+
+.header {
+    height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    flex-flow: row;
+}
+
+.header-icon {
+    width: 22px;
+    height: 22px;
+    margin: 10px;
+}
+
+.header-icon-back {
+    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-header-back.png);
+    background-size: 22px 22px;
+}
+
+.header-text {
+    color: #020202;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.list {
+    flex: 1;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.list-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+}
+
+.list-item {
+    margin-top: 20px;
+    flex-flow: row;
+}
+
+.goods-cover {
+    width: 70px;
+    height: 70px;
+    border-radius: 4px;
+}
+
+
+.goods-info {
+    display: flex;
+    margin-left: 10px;
+    flex: 1;
+}
+
+.goods-main {
+    flex-flow: row;
+}
+
+.goods-title {
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+    flex: 1;
+}
+
+.goods-price-signal {
+    color: #FE5760;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 3px;
+}
+
+.goods-price {
+    color: #FE5760;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.goods-sub {
+    flex: 1;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.goods-count {
+    font-size: 15px;
+    color: #999;
+    display: block;
+    text-align: right;
+}
+
+.order-note {
+    flex-flow: row;
+    padding: 15px 0;
+    align-items: center;
+}
+
+.order-note-key {
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+
+.order-note-input {
+    flex: 1;
+    text-align: right;
+    font-size: 15px;
+    border: none;
+}
+
+.order-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-top: 1px solid #eee;
+}
+
+.total-text {
+    color: #333;
+    font-size: 12px;
+    margin-left: 15px;
+}
+
+.total-price {
+    color: #FE5760;
+    font-size: 20px;
+    font-weight: bold;
+    flex: 1;
+}
+
+.order-pay-btn {
+    width: 120px;
+    height: 48px;
+    background: #FE5760;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-pay-btn-text {
+    color: #fff;
+    font-size: 15px;
+}
+</style>
