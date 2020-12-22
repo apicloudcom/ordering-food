@@ -12,12 +12,11 @@
         </view>
         <view class="user-info flex flex-h flex-center-v" v-else @click="wxLogin">
             <img class="user-avatar"
-                 src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-user-avatar.png" alt=""/>
+                 src="../../image/icon/icon-user-avatar.png" alt=""/>
             <text class="user-name">使用微信登录</text>
         </view>
 
 
-        <view class="user-info-shadow"></view>
 
         <scroll-view scroll-y class="flex-1 main-user-scroll-view"
                      enable-back-to-top refresher-enabled
@@ -38,9 +37,6 @@
 <style scoped>
 .main-user {
     height: 100%;
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/bg/bg-user-header.png);
-    background-size: 100%;
-    background-repeat: no-repeat;
 }
 
 
@@ -55,14 +51,9 @@
 
 .user-info {
     padding: 16px;
+    border-bottom: 2px solid #eee;
 }
 
-.user-info-shadow {
-    height: 10px;
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/bg/bg-user-info-shadow.png);
-    background-size: 100% 10px;
-    background-repeat: no-repeat;
-}
 
 .user-avatar {
     width: 54px;

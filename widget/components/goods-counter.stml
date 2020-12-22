@@ -1,8 +1,8 @@
 <template name="goods-counter">
     <view class="flex-h">
-        <view class="num-btn num-decrease" @click="countChange(-1)"></view>
+        <img class="num-btn num-decrease" src="../../image/icon/icon-cart-num-decrease.png" @click="countChange(-1)" />
         <text class="num-text">{ this.props.count }</text>
-        <view class="num-btn num-increase" @click="countChange(1)"></view>
+        <img class="num-btn num-increase" src="../../image/icon/icon-cart-num-increase.png" @click="countChange(1)"/>
     </view>
 </template>
 
@@ -37,14 +37,6 @@ export default {
     width: 22px;
     height: 22px;
     background-size: 22px 22px;
-}
-
-.num-decrease {
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-num-decrease.png);
-}
-
-.num-increase {
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-num-increase.png);
 }
 
 .num-text {

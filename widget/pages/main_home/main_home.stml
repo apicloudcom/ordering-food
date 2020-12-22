@@ -14,7 +14,7 @@
                 <view class="shop-header flex-h">
                     <text class="shop-name flex-1 ellipsis-1">{{ shopInfo.name }}</text>
                     <img class="shop-phone" @click="callPhone"
-                         src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-home-phone.png"
+                         src="../../image/icon/icon-home-phone.png"
                          alt=""/>
                 </view>
                 <view class="content-wrap">

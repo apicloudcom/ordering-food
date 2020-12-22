@@ -3,8 +3,7 @@
     <safe-area class="page">
 
         <view class="header">
-            <!--            <view class="header-icon header-icon-back"></view>-->
-            <img src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-header-back.png" alt=""
+            <img src="../../image/icon/icon-header-back.png" alt=""
                  class="header-icon" @click="close" />
             <text class="header-text">待付款订单</text>
             <view class="header-icon"></view>
@@ -130,11 +129,6 @@ export default {
     width: 22px;
     height: 22px;
     margin: 10px;
-}
-
-.header-icon-back {
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-header-back.png);
-    background-size: 22px 22px;
 }
 
 .header-text {

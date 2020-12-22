@@ -1,6 +1,6 @@
 <template name="empty-block">
     <view class="empty-block-empty-block">
-        <img class="empty-block-empty-image" src={{'https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/empty/bg-empty-'+this.props.type+'.png'}} alt=""/>
+        <img class="empty-block-empty-image" src={{'../../image/empty/bg-empty-'+this.props.type+'.png'}} alt=""/>
         <text class="empty-block-tips-text">{{ this.props.text }}</text>
     </view>
 </template>

@@ -2,7 +2,8 @@
 
     <view class="page flex">
         <img class="goods-pic" mode="aspectFill" src={{goods.pic_main}} alt=""/>
-        <view class="back-btn" style={{'top:'+safeAreaTop+'px'}} @click="closeWin"></view>
+        <img src="../../image/icon/icon-goods-detail-back-btn.png" alt=""
+             class="back-btn" @click="closeWin" :style="'top:'+safeAreaTop+'px'"/>
         <view class="goods-info">
             <text class="goods-name">{{ goods.name }}</text>
             <text class="goods-desc">{{ goods.description }}</text>
@@ -32,7 +33,6 @@ export default {
     components: {GoodsAction, GoodsCounter},
     apiready() {
         this.data.goods = api.pageParam.item.togoods;
-        this.data.safeAreaTop = api.safeArea ? api.safeArea.top : 0;
         let cartList = api.getPrefs({sync: true, key: 'CART-DATA'});
         if (cartList) {
             cartList = JSON.parse(cartList)
@@ -46,8 +46,7 @@ export default {
         return {
             goods: false,
             count: 1,
-            cartData: false,
-            safeAreaTop: 0
+            cartData: false
         }
     },
     methods: {
@@ -77,6 +76,9 @@ export default {
     computed: {
         price() {
             return Number(this.data.goods.curt_price).toFixed(2).split('.')
+        },
+        safeAreaTop() {
+            return api.safeArea ? api.safeArea.top : 0
         }
     }
 }
@@ -141,8 +143,6 @@ export default {
     left: 15px;
     width: 32px;
     height: 32px;
-    background: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-goods-detail-back-btn.png);
-    background-size: 32px 32px;
     z-index: 999;
 }
 </style>

@@ -1,7 +1,7 @@
 <template name="radio-box">
     <view class="radio-box-radio-box-wrap" @click="radioClick()">
         <img class="radio-box-radio-box"
-             src={{'https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-radio-'+(this.props.checked?'checked':'normal')+'.png'}}
+             src={{'../../image/icon/icon-radio-'+(this.props.checked?'checked':'normal')+'.png'}}
              alt=""/>
     </view>
 </template>

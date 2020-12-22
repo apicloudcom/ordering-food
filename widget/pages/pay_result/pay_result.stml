@@ -2,7 +2,7 @@
     <view class="page flex flex-center">
 
         <img class="icon"
-             src="https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-pay-result-success.png" alt=""/>
+             src="../../image/icon/icon-pay-result-success.png" alt=""/>
         <text class="tips-text">订单支付成功</text>
 
         <view class="btn-box flex-h flex-center">

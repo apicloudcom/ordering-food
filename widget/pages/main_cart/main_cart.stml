@@ -12,7 +12,10 @@
                     <text class="main-cart-list-title">选购的商品</text>
                     <view @click="toggleEdit">
                         <text class="main-cart-finnish-text" v-if="isEdit">完成</text>
-                        <text class="main-cart-action-text" v-else>编辑</text>
+                        <view v-else class="main-cart-action">
+                            <img class="main-cart-action-icon" src="../../image/icon/icon-cart-edit.png" alt=""/>
+                            <text class="main-cart-action-text">编辑</text>
+                        </view>
                     </view>
 
                 </view>
@@ -239,10 +242,16 @@ export default {
     flex: 1;
 }
 
+.main-cart-action {
+    flex-direction: row;
+}
+
+.main-cart-action-icon {
+    width: 18px;
+    height: 18px;
+}
+
 .main-cart-action-text {
-    padding-left: 20px;
-    background-image: url(https://yangyongan-com.oss-cn-beijing.aliyuncs.com/avm-demo/icon/icon-cart-edit.png);
-    background-size: 18px 18px;
     background-repeat: no-repeat;
     background-position: left center;
     font-size: 14px;
