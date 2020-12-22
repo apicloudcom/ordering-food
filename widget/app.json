@@ -24,15 +24,15 @@
             "url": "./pages/main_home/main_home.stml",
             "title": "首页"
         }, {
-            "name": "doc",
+            "name": "menu",
             "url": "./pages/main_menu/main_menu.stml",
             "title": "菜单"
         }, {
-            "name": "about",
+            "name": "cart",
             "url": "./pages/main_cart/main_cart.stml",
             "title": "购物车"
         }, {
-            "name": "about",
+            "name": "user",
             "url": "./pages/main_user/main_user.stml",
             "title": "我的"
         }],

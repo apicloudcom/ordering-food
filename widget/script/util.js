@@ -90,7 +90,13 @@ function setTabBarIndex(index, scroll = true) {
     }
 }
 
-
+/**
+ * 获取设备标识
+ * @returns {ConstrainDOMString | string | boolean}
+ */
+function getDeviceId(){
+    return api.deviceId;
+}
 export {
-    isMP, getUser, setTabBarBadge, setTabBarIndex
+    isMP, getUser, setTabBarBadge, setTabBarIndex,getDeviceId
 }

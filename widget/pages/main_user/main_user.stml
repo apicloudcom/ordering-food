@@ -84,7 +84,7 @@
 <script>
 import emptyBlock from "../../components/empty-block.stml";
 import OrderItem from "../../components/order-item.stml";
-import {getUser, isMP} from "../../script/util";
+import {getDeviceId, getUser, isMP} from "../../script/util";
 import {config, GET, POST} from '../../script/req'
 
 
@@ -137,38 +137,42 @@ export default {
                 }, 1000)
             }
         },
+        doLogin(data){
+            POST('c_users/app_login', data, {
+                returnAll: false
+            }).then(data => {
+                api.setPrefs({
+                    key: 'COOKIE',
+                    value: data.header.cookie
+                })
+
+                this.mockLogin();
+            })
+        },
         wxLogin() {
             if (isMP()) {
                 this.mpLogin();
             } else {
-                const wxPlus = api.require('wxPlus');
-                wxPlus.isInstalled(ret => {
-                    if (ret.installed) {
-                        wxPlus.auth((ret, err) => {
-                            if (ret.status) {
-                                POST('c_users/app_wx_login', ret, {
-                                    returnAll: false
-                                }).then(data => {
-                                    api.setPrefs({
-                                        key: 'COOKIE',
-                                        value: data.header.cookie
-                                    })
-
-                                    this.mockLogin();
-                                })
-                            } else {
-                                api.alert({
-                                    title: '微信登录失败',
-                                    msg: JSON.stringify(err)
-                                })
-                            }
-                        });
-                    } else {
-                        api.toast({
-                            msg: '当前设备未安装微信客户端'
-                        })
-                    }
-                });
+                // const wxPlus = api.require('wxPlus');
+                // wxPlus.isInstalled(ret => {
+                //     if (ret.installed) {
+                //         wxPlus.auth((ret, err) => {
+                //             if (ret.status) {
+                //                 this.doLogin(ret);
+                //             } else {
+                //                 api.alert({
+                //                     title: '微信登录失败',
+                //                     msg: JSON.stringify(err)
+                //                 })
+                //             }
+                //         });
+                //     } else {
+                //         api.toast({
+                //             msg: '当前设备未安装微信客户端'
+                //         })
+                //     }
+                // });
+                this.doLogin({ssid:getDeviceId()});
             }
         },
         // 小程序端登录逻辑
