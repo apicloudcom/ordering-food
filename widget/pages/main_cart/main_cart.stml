@@ -114,7 +114,7 @@ export default {
             if (cartData) {
                 cartData = JSON.parse(cartData);
                 this.data.cartData = cartData;
-                this.computedCartList();
+                this.generateCartList();
                 setTabBarBadge(2, Object.keys(cartData).length);
             }
         },
@@ -126,7 +126,7 @@ export default {
                 value: this.data.cartData
             });
         },
-        computedCartList() {
+        generateCartList() {
             let cartData = this.data.cartData;
             let arr = [];
             for (let i in cartData) {
@@ -157,7 +157,7 @@ export default {
                 value: this.data.cartData
             });
 
-            this.computedCartList();
+            this.generateCartList();
             setTabBarBadge(2, Object.keys(this.data.cartData).length);
         },
         gotoCrash() {
