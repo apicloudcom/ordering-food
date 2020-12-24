@@ -1,4 +1,9 @@
-[TOC]
+
+本文地址: (如果遇到图片显示异常，尝试使用 ` gitee ` 镜像)
+
+` github ` https://github.com/apicloudcom/ordering-food/blob/main/docs/README.md
+
+` gitee `  https://gitee.com/YangYongAn/ordering-food/blob/main/docs/README.md
 
 # 堂食点餐源码解析文档
 
