@@ -17,7 +17,7 @@
 
 
 ### 截图预览
-![demo](./demo.png)
+![demo](docs/demo.png)
 ## 源码说明
 
 ### 源码文件目录结构
