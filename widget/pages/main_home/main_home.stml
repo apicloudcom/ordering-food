@@ -133,7 +133,7 @@ export default {
                 setTabBarBadge(2, Object.keys(cartList).length);
             }
         },
-        getData(format) {
+        getData() {
             GET('shops/getInfo')
                 .then(data => {
                     this.data.shopInfo = data;
