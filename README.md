@@ -11,9 +11,9 @@
 
 模板包含前后端，其中前端代码使用 ` avm.js ` 多端技术开发，可同时编译为 ` Android `  &  ` iOS `   ` App ` 以及微信小程序。后端使用 ` APICloud ` 数据云3.0云函数自定义接口。也可以使用自建后端服务实现，
 
-详细了解 [` avm.js `](https://docs.apicloud.com/apicloud3/) 多端开发技术。
+详细了解 [` avm.js `](https://docs.apicloud.com/apicloud3/?uzchannel=30) 多端开发技术。
 
-详细了解 [数据云服务](https://docs.apicloud.com/Cloud-API/sentosa) 。
+详细了解 [数据云服务](https://docs.apicloud.com/Cloud-API/sentosa?uzchannel=30) 。
 
 
 ### 截图预览
@@ -53,7 +53,7 @@
 └─config.xml                应用配置文件
 ~~~
 ### 使用步骤
-1. 下载 [` APICloud Studio 3  `](https://www.apicloud.com/studio3#downloadBtn) 作为开发工具。
+1. 下载 [` APICloud Studio 3  `](https://www.apicloud.com/studio3?uzchannel=30#downloadBtn) 作为开发工具。
 
 2. 通过此模板创建应用后，使用 ` Studio 3 ` 导入创建的模板应用项目。步骤： ` Studio 3 ` 顶部菜单-项目-导入项目-云端检出，选择对应项目检出到本地。
 

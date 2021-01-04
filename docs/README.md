@@ -18,7 +18,7 @@
 项目中前端技术要点包括跨页面通信、全局购物车数据管理、自定义复用组件编写和辅助助手函数等等。 使用  ` APICloud `  多端技术实现了一套代码，多端运行。 支持编译成 ` Android `  &  ` iOS `   ` App `
 以及微信小程序。
 
-项目后端使用的是 ` APICloud ` [数据云3.0](https://docs.apicloud.com/Cloud-API/sentosa) 来构建的：
+项目后端使用的是 ` APICloud ` [数据云3.0](https://docs.apicloud.com/Cloud-API/sentosa?uzchannel=30) 来构建的：
 通过编写云函数自动管理维护接口和数据，详细可以参考数据云的文档。也可以自定义后端接口，通过自写服务器完成开发。
 
 ### 使用步骤
@@ -70,7 +70,7 @@
 《点餐》项目的首页是由一个可以同级切换窗口组构成的。 在 ` APP ` 原生端 上面， 我们可以借助 ` FrameGroup ` 来实现这样的切换组。 小程序原生上则是使用 ` app.json `
 配置文件来 [配置定义 ` TabBar ` 的相关属性](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/custom-tabbar.html) 。
 为了统一两端的差异问题，通过在 ` weight ` 根目录下定义一个 ` app.json `
-文件，具体字段说明请参考[《openTabLayout布局文档》](https://docs.apicloud.com/Client-API/api#openTabLayout) 。 所以，如果只书写原生端 ` APP `
+文件，具体字段说明请参考[《openTabLayout布局文档》](https://docs.apicloud.com/Client-API/api?uzchannel=30#openTabLayout) 。 所以，如果只书写原生端 ` APP `
 ，而不计划支持小程序的话，这个配置文件就是可选的了。
 
 ### TabBar页面的组织
@@ -114,7 +114,7 @@ import {GET} from "../../script/req";
 #### 商家头图和主要信息 （数据绑定）
 
 头部主图是不会和 ` scroll-view ` 一起滚动的，所以它应该在滚动容器的外部。使用一个 ` img ` 图片标签来显示图片。 其数据是来自服务器接口的数据，
-使用 ` avm.js ` 提供的[《数据绑定》](https://docs.apicloud.com/apicloud3/#/basic/databind?index=1&subIndex=2) 来处理数据。
+使用 ` avm.js ` 提供的[《数据绑定》](https://docs.apicloud.com/apicloud3/?uzchannel=30#/basic/databind?index=1&subIndex=2) 来处理数据。
 
 ~~~html
 <img class="shop-photo" style={{'height:'+photoRealHeight+'px'}} src={{shopInfo.img}} alt=""/>
@@ -446,7 +446,7 @@ function generateCartList() {
 ~~~
 
 注意到每一个条目的开头嵌套了一个 ` <radio-box/> ` 自定义组件。
-这个组件担负的任务很简单，就是使用自定的样式来渲染一个单选框。当然 ` avm.js ` 自带的系统组件  [` radio `](https://docs.apicloud.com/apicloud3/#/component/radio?index=4&subIndex=12)
+这个组件担负的任务很简单，就是使用自定的样式来渲染一个单选框。当然 ` avm.js ` 自带的系统组件  [` radio `](https://docs.apicloud.com/apicloud3/?uzchannel=30#/component/radio?index=4&subIndex=12)
 也是可以实现的。
 
 #### computed 的使用
