@@ -1,5 +1,5 @@
-# ordering-food
-多端案例之《点餐》项目源码
+# 多端案例之《点餐》项目源码 (ordering-food)
+
 > 如果github图文异常请使用 ` gitee ` 镜像仓库
 
 -  ` github`  https://github.com/apicloudcom/ordering-food
