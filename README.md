@@ -1,5 +1,5 @@
-# ordering-food
-多端案例之《点餐》项目源码
+# 多端案例之《点餐》项目源码 (ordering-food)
+
 > 如果github图文异常请使用 ` gitee ` 镜像仓库
 
 -  ` github`  https://github.com/apicloudcom/ordering-food
@@ -66,4 +66,4 @@
 更多入门步骤请参考 [APICloud多端开发快速上手教程](https://github.com/apicloudcom/hello-app)
 
 ## 堂食点餐源码解析文档
-本页面提供基础信息概览，如需进一步了解技术细节和实现，请参阅 ` docs `目录下的 [《堂食点餐源码解析文档》](./docs/README.md);
+本页面提供基础信息概览，如需进一步了解技术细节和实现，请参阅 ` docs ` 目录下的 [《堂食点餐源码解析文档》](./docs/README.md);
