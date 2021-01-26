@@ -104,7 +104,7 @@ export default {
             this.data.scrollTo = this.offsetList[index];
         },
         onScroll(e) {
-            const y = isMP() ? e.detail.scrollTop : e.detail.y;
+            const y = e.detail.scrollTop;
 
             for (let i = 0; i < this.offsetList.length; i++) {
                 if (i) {// 第一个不判断
@@ -157,6 +157,9 @@ export default {
     height: 44px;
 }
 
+.menu-wrap{
+    overflow-y: hidden;
+}
 
 .left-category {
     width: 110px;

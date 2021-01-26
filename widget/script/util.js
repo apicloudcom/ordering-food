@@ -5,7 +5,7 @@
  * @returns {boolean}
  */
 function isMP() {
-    return !api.uiMode;
+    return api.platform == 'mp';
 }
 
 /**
