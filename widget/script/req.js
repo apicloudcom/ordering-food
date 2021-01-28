@@ -1,6 +1,6 @@
 const config = {
     schema: 'https',
-    host: 'a7777777777777-pd.apicloud-saas.com',
+    host: 'a6150694751554-dev.apicloud-saas.com',
     path: 'api'
 }
 
