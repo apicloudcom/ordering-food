@@ -1,10 +1,6 @@
 # 多端案例之《点餐》项目源码 (ordering-food)
 
-> 如果github图文异常请使用 ` gitee ` 镜像仓库
-
 -  ` github`  https://github.com/apicloudcom/ordering-food
-
--  ` gitee `  https://gitee.com/YangYongAn/ordering-food
 ## 项目介绍
 ### 功能描述
 《点餐》项目是一个餐饮商户单商家堂食下单应用。主要功能包括浏览商家主页信息、查看推荐菜品、下单商品、取餐等号等功能。

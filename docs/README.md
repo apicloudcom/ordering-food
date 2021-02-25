@@ -1,9 +1,6 @@
 
-本文地址: (如果遇到图片显示异常，尝试使用 ` gitee ` 镜像)
-
+本文地址:
 ` github ` https://github.com/apicloudcom/ordering-food/tree/main/docs
-
-` gitee `  https://gitee.com/YangYongAn/ordering-food/tree/main/docs
 
 # 堂食点餐源码解析文档
 
