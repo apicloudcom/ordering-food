@@ -1,4 +1,3 @@
-
 本文地址:
 ` github ` https://github.com/apicloudcom/ordering-food/tree/main/docs
 
@@ -12,7 +11,8 @@
 
 ## 项目架构
 
-项目中前端技术要点包括跨页面通信、全局购物车数据管理、自定义复用组件编写和辅助助手函数等等。 使用  ` APICloud `  多端技术实现了一套代码，多端运行。 支持编译成 ` Android `  &  ` iOS `   ` App `
+项目中前端技术要点包括跨页面通信、全局购物车数据管理、自定义复用组件编写和辅助助手函数等等。 使用  ` APICloud `  多端技术实现了一套代码，多端运行。 支持编译成 ` Android `
+&  ` iOS `   ` App `
 以及微信小程序。
 
 项目后端使用的是 ` APICloud ` [数据云3.0](https://docs.apicloud.com/Cloud-API/sentosa?uzchannel=30) 来构建的：
@@ -24,6 +24,8 @@
 **本文侧重于《点餐》项目的技术要点分析和说明**。
 
 项目源码位于 https://github.com/apicloudcom/ordering-food 。具体的项目源码是在仓库代码的 ` widget ` 目录下面，此目录也就是应用的根目录。
+
+> [2021-5-22更新] 本项目数据云模型代码已经更新到线上的预置模型中，如有需要请参考本文档第三大节：《数据云模型导入和快速上手》
 
 ### 源码文件目录结构
 
@@ -67,7 +69,8 @@
 《点餐》项目的首页是由一个可以同级切换窗口组构成的。 在 ` APP ` 原生端 上面， 我们可以借助 ` FrameGroup ` 来实现这样的切换组。 小程序原生上则是使用 ` app.json `
 配置文件来 [配置定义 ` TabBar ` 的相关属性](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/custom-tabbar.html) 。
 为了统一两端的差异问题，通过在 ` weight ` 根目录下定义一个 ` app.json `
-文件，具体字段说明请参考[《openTabLayout布局文档》](https://docs.apicloud.com/Client-API/api?uzchannel=30#openTabLayout) 。 所以，如果只书写原生端 ` APP `
+文件，具体字段说明请参考[《openTabLayout布局文档》](https://docs.apicloud.com/Client-API/api?uzchannel=30#openTabLayout) 。
+所以，如果只书写原生端 ` APP `
 ，而不计划支持小程序的话，这个配置文件就是可选的了。
 
 ### TabBar页面的组织
@@ -103,15 +106,14 @@ function getData() {
 import {GET} from "../../script/req";
 ~~~
 
-这个文件中，主要处理了应用的请求、会话和异常处理等逻辑。
-相关业务代码可以只是作为参考，具体项目中根据实际的会话认证方式、服务接口模式以及个人偏好等方式去组织。
+这个文件中，主要处理了应用的请求、会话和异常处理等逻辑。 相关业务代码可以只是作为参考，具体项目中根据实际的会话认证方式、服务接口模式以及个人偏好等方式去组织。
 
 拿到数据以后，通过 ` this.data.shopInfo = data ` 将数据交给到页面的数据域中，以便于接下来的数据绑定显示。
 
 #### 商家头图和主要信息 （数据绑定）
 
-头部主图是不会和 ` scroll-view ` 一起滚动的，所以它应该在滚动容器的外部。使用一个 ` img ` 图片标签来显示图片。 其数据是来自服务器接口的数据，
-使用 ` avm.js ` 提供的[《数据绑定》](https://docs.apicloud.com/apicloud3/?uzchannel=30#/basic/databind?index=1&subIndex=2) 来处理数据。
+头部主图是不会和 ` scroll-view ` 一起滚动的，所以它应该在滚动容器的外部。使用一个 ` img ` 图片标签来显示图片。 其数据是来自服务器接口的数据， 使用 ` avm.js `
+提供的[《数据绑定》](https://docs.apicloud.com/apicloud3/?uzchannel=30#/basic/databind?index=1&subIndex=2) 来处理数据。
 
 ~~~html
 <img class="shop-photo" style={{'height:'+photoRealHeight+'px'}} src={{shopInfo.img}} alt=""/>
@@ -442,8 +444,8 @@ function generateCartList() {
 
 ~~~
 
-注意到每一个条目的开头嵌套了一个 ` <radio-box/> ` 自定义组件。
-这个组件担负的任务很简单，就是使用自定的样式来渲染一个单选框。当然 ` avm.js ` 自带的系统组件  [` radio `](https://docs.apicloud.com/apicloud3/?uzchannel=30#/component/radio?index=4&subIndex=12)
+注意到每一个条目的开头嵌套了一个 ` <radio-box/> ` 自定义组件。 这个组件担负的任务很简单，就是使用自定的样式来渲染一个单选框。当然 ` avm.js `
+自带的系统组件  [` radio `](https://docs.apicloud.com/apicloud3/?uzchannel=30#/component/radio?index=4&subIndex=12)
 也是可以实现的。
 
 #### computed 的使用
@@ -703,3 +705,47 @@ function addOrder() {
 
 ---
 至此，所有的页面逻辑主线已经完成。应用中还有一些细节处理，可以参考源码和文档进一步学习研究。
+
+## 数据云模型导入和快速上手
+
+### 开启数据云和导入模型
+
+《堂食点餐》模板的数据云模型和云函数现已上线到数据云预置模型中了。进入项目的控制面板，选择“云开发”中的“云设置”。 如果是第一次打开这个界面，数据云默认是么有开启的。需要点击欢迎页的开启按钮，即可开启数据云。
+
+开启数据云之后，可以在“云设置”页面进行一些基础设置。 接下来重点关注到“数据模型”页面。点击“数据模型”打开相关页面，我们可以自行创建模型和云函数，也可以在右侧“预制模型”中看到“堂食点餐"同名模型。
+点击右下角绿色小加号，将该模型进行导入。
+
+导入成功以后，可以在左侧看到相应的数据模型已经显示出来。点选模型，可以进入相关模型数据的预览。 或者是点击左侧底部的“云函数开发”会弹出云函数管理浮层，浮层中间是使用引导和文档链接。可以点选左侧顶部的绿色按钮进行创作新的云函数，
+也可以点选已有的云函数，学习研究预置的函数和接口是如何设计的。
+
+![default_model](default_model.jpg)
+
+### 快速上手
+
+以左侧的“shop”模型为例，点击模型打开“远程函数”。在远程函数中找到“getInfo”接口，点选后右侧就会展现相关代码实现。
+此时需要进行一次全量发布，点击右侧上方的发布右侧的下拉箭头，选择全量发布，将刚刚导入的所有模型和云函数发布并生效。
+
+接下来可以点击接口联调，打开API接口生成列表。在shop分组下找到getInfo 接口，并可以点击 “Try it out”进行接口测试。
+
+请求后将会看到完整的请求地址。接下来打开App端的源码，找到 script/req.js 大约第三行的位置，将代码中的请求二级前缀更改为项目的真实API路径。
+例如：
+
+![change_api](change_api.jpg)
+
+
+```diff
+const config = {
+    schema: 'https',
+-    host: 'a7777777777777-pd.apicloud-saas.com',
++    host: 'a6176110219206-dev.apicloud-saas.com',
+    path: 'api'
+}
+```
+保存后,打开首页开始测试一下:
+进入 pages/main_home/main_home.stml 页面，右键点击空白区域，选择“实时预览”。稍等片刻，在右侧的预览区域将会出现预览画面。
+点击地址后面的赋值图标，拿到预览地址。放置到chrome等浏览器中可以观察请求，确认渲染数据的确是来自当前项目的数据云接口的模型数据。
+
+
+### 深入使用和进阶
+回到数据云面板，可以查看示例模型和云函数。还可以通过数据云完整文档学习完整的数据云使用方法。
+数据云文档链接：[https://docs.apicloud.com/Cloud-API/sentosa](https://docs.apicloud.com/Cloud-API/sentosa?uzchannel=30)
